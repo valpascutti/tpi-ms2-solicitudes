@@ -11,26 +11,26 @@ public class SolicitudManager {
     public static List<Responsable> responsables = new ArrayList<>();
     private int proximoId = 1;
 
-    public int registrarSolicitud(String legajo, String nombre, String email, String tipo, String prioridad, String descripcion) {
-        String error = validarDatos(legajo, nombre, email, tipo, prioridad, descripcion);
+    public int registrarSolicitud(Estudiante estudiante, String tipo, String prioridad, String descripcion) {
+        String error = validarDatos(estudiante, tipo, prioridad, descripcion);
         if (error != null) {
             System.out.println("Error: " + error);
             return -1;
         }
-        Solicitud solicitud = crearSolicitud(new Estudiante(legajo, nombre, email), tipo, prioridad, descripcion);
+        Solicitud solicitud = crearSolicitud(estudiante, tipo, prioridad, descripcion);
         lista.add(solicitud);
         System.out.println("Solicitud registrada con id " + solicitud.getId());
         return solicitud.getId();
     }
 
-    private String validarDatos(String legajo, String nombre, String email, String tipo, String prioridad, String descripcion) {
-        if (estaVacio(legajo)) {
+    private String validarDatos(Estudiante estudiante, String tipo, String prioridad, String descripcion) {
+        if (estudiante == null || estaVacio(estudiante.getLegajo())) {
             return "legajo vacio";
         }
-        if (estaVacio(nombre)) {
+        if (estaVacio(estudiante.getNombre())) {
             return "nombre vacio";
         }
-        if (!esEmailValido(email)) {
+        if (!esEmailValido(estudiante.getEmail())) {
             return "email invalido";
         }
         if (!esTipoValido(tipo)) {

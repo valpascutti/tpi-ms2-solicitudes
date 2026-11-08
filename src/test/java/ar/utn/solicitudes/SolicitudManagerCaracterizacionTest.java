@@ -22,7 +22,7 @@ class SolicitudManagerCaracterizacionTest {
     }
 
     private int registrarValida(String tipo, String prioridad) {
-        return manager.registrarSolicitud("10001", "Estudiante Uno", "uno@mail.com", tipo, prioridad, "Descripcion de prueba valida");
+        return manager.registrarSolicitud(new Estudiante("10001", "Estudiante Uno", "uno@mail.com"), tipo, prioridad, "Descripcion de prueba valida");
     }
 
     @Nested
@@ -52,7 +52,7 @@ class SolicitudManagerCaracterizacionTest {
         @Test
         @DisplayName("CP03 Email invalido se rechaza y no se guarda")
         void emailInvalido() {
-            int id = manager.registrarSolicitud("10001", "Estudiante Uno", "mail-invalido", "EXAMEN", "ALTA", "Descripcion de prueba valida");
+            int id = manager.registrarSolicitud(new Estudiante("10001", "Estudiante Uno", "mail-invalido"), "EXAMEN", "ALTA", "Descripcion de prueba valida");
 
             assertEquals(-1, id);
             assertTrue(SolicitudManager.lista.isEmpty());
@@ -73,14 +73,14 @@ class SolicitudManagerCaracterizacionTest {
         @Test
         @DisplayName("CP06 Descripcion de menos de 10 caracteres se rechaza")
         void descripcionCorta() {
-            int id = manager.registrarSolicitud("10001", "Estudiante Uno", "uno@mail.com", "EXAMEN", "ALTA", "corta");
+            int id = manager.registrarSolicitud(new Estudiante("10001", "Estudiante Uno", "uno@mail.com"), "EXAMEN", "ALTA", "corta");
             assertEquals(-1, id);
         }
 
         @Test
         @DisplayName("CP07 Legajo vacio se rechaza")
         void legajoVacio() {
-            int id = manager.registrarSolicitud("", "Estudiante Uno", "uno@mail.com", "EXAMEN", "ALTA", "Descripcion de prueba valida");
+            int id = manager.registrarSolicitud(new Estudiante("", "Estudiante Uno", "uno@mail.com"), "EXAMEN", "ALTA", "Descripcion de prueba valida");
             assertEquals(-1, id);
         }
     }
@@ -251,10 +251,10 @@ class SolicitudManagerCaracterizacionTest {
         @DisplayName("CP23 El reporte mantiene exactamente el mismo formato y totales")
         void reporteGoldenMaster() {
             manager.agregarResponsable(2, "Coordinacion TUP", "COORDINACION");
-            int id1 = manager.registrarSolicitud("10001", "Estudiante Uno", "uno@mail.com", "CERTIFICADO", "MEDIA", "Certificado de alumno regular");
-            int id2 = manager.registrarSolicitud("10002", "Estudiante Dos", "dos@mail.com", "EXAMEN", "ALTA", "Pedido de mesa especial de examen");
-            int id3 = manager.registrarSolicitud("10003", "Estudiante Tres", "tres@mail.com", "RECLAMO", "BAJA", "Reclamo por nota mal cargada");
-            manager.registrarSolicitud("10004", "Estudiante Cuatro", "mail-invalido", "EXAMEN", "ALTA", "Pedido con email invalido");
+            int id1 = manager.registrarSolicitud(new Estudiante("10001", "Estudiante Uno", "uno@mail.com"), "CERTIFICADO", "MEDIA", "Certificado de alumno regular");
+            int id2 = manager.registrarSolicitud(new Estudiante("10002", "Estudiante Dos", "dos@mail.com"), "EXAMEN", "ALTA", "Pedido de mesa especial de examen");
+            int id3 = manager.registrarSolicitud(new Estudiante("10003", "Estudiante Tres", "tres@mail.com"), "RECLAMO", "BAJA", "Reclamo por nota mal cargada");
+            manager.registrarSolicitud(new Estudiante("10004", "Estudiante Cuatro", "mail-invalido"), "EXAMEN", "ALTA", "Pedido con email invalido");
             manager.asignarResponsable(id1, 1);
             manager.cambiarEstado(id1, "RESUELTA");
             manager.asignarResponsable(id2, 2);

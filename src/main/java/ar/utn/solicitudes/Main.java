@@ -8,10 +8,10 @@ public class Main {
         m.agregarResponsable(1, "Bedelia Central", "BEDELIA");
         m.agregarResponsable(2, "Coordinacion TUP", "COORDINACION");
 
-        int id1 = m.registrarSolicitud("10001", "Estudiante Uno", "uno@mail.com", "CERTIFICADO", "MEDIA", "Certificado de alumno regular");
-        int id2 = m.registrarSolicitud("10002", "Estudiante Dos", "dos@mail.com", "EXAMEN", "ALTA", "Pedido de mesa especial de examen");
-        int id3 = m.registrarSolicitud("10003", "Estudiante Tres", "tres@mail.com", "RECLAMO", "BAJA", "Reclamo por nota mal cargada");
-        m.registrarSolicitud("10004", "Estudiante Cuatro", "mail-invalido", "EXAMEN", "ALTA", "Pedido con email invalido");
+        int id1 = m.registrarSolicitud(new Estudiante("10001", "Estudiante Uno", "uno@mail.com"), "CERTIFICADO", "MEDIA", "Certificado de alumno regular");
+        int id2 = m.registrarSolicitud(new Estudiante("10002", "Estudiante Dos", "dos@mail.com"), "EXAMEN", "ALTA", "Pedido de mesa especial de examen");
+        int id3 = m.registrarSolicitud(new Estudiante("10003", "Estudiante Tres", "tres@mail.com"), "RECLAMO", "BAJA", "Reclamo por nota mal cargada");
+        m.registrarSolicitud(new Estudiante("10004", "Estudiante Cuatro", "mail-invalido"), "EXAMEN", "ALTA", "Pedido con email invalido");
 
         m.asignarResponsable(id1, 1);
         m.cambiarEstado(id1, "RESUELTA");
