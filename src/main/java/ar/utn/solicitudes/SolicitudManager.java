@@ -3,27 +3,32 @@ package ar.utn.solicitudes;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class SolicitudManager {
+
+    private static final int LARGO_MINIMO_DESCRIPCION = 10;
 
     public static List<Solicitud> lista = new ArrayList<>();
     public static List<Responsable> responsables = new ArrayList<>();
     private int proximoId = 1;
 
     public int registrarSolicitud(Estudiante estudiante, String tipo, String prioridad, String descripcion) {
-        String error = validarDatos(estudiante, tipo, prioridad, descripcion);
+        Optional<TipoSolicitud> tipoSolicitud = TipoSolicitud.desde(tipo);
+        Optional<Prioridad> prioridadSolicitud = Prioridad.desde(prioridad);
+        String error = validarDatos(estudiante, tipoSolicitud, prioridadSolicitud, descripcion);
         if (error != null) {
             System.out.println("Error: " + error);
             return -1;
         }
-        Solicitud solicitud = crearSolicitud(estudiante, tipo, prioridad, descripcion);
+        Solicitud solicitud = crearSolicitud(estudiante, tipoSolicitud.get(), prioridadSolicitud.get(), descripcion);
         lista.add(solicitud);
         System.out.println("Solicitud registrada con id " + solicitud.getId());
         return solicitud.getId();
     }
 
-    private String validarDatos(Estudiante estudiante, String tipo, String prioridad, String descripcion) {
+    private String validarDatos(Estudiante estudiante, Optional<TipoSolicitud> tipo, Optional<Prioridad> prioridad, String descripcion) {
         if (estudiante == null || estaVacio(estudiante.getLegajo())) {
             return "legajo vacio";
         }
@@ -33,13 +38,13 @@ public class SolicitudManager {
         if (!esEmailValido(estudiante.getEmail())) {
             return "email invalido";
         }
-        if (!esTipoValido(tipo)) {
+        if (tipo.isEmpty()) {
             return "tipo invalido";
         }
-        if (!esPrioridadValida(prioridad)) {
+        if (prioridad.isEmpty()) {
             return "prioridad invalida";
         }
-        if (descripcion == null || descripcion.length() < 10) {
+        if (descripcion == null || descripcion.length() < LARGO_MINIMO_DESCRIPCION) {
             return "descripcion muy corta";
         }
         return null;
@@ -53,22 +58,14 @@ public class SolicitudManager {
         return email != null && email.contains("@") && email.contains(".");
     }
 
-    private boolean esTipoValido(String tipo) {
-        return "CERTIFICADO".equals(tipo) || "EXAMEN".equals(tipo) || "EQUIVALENCIA".equals(tipo) || "RECLAMO".equals(tipo);
-    }
-
-    private boolean esPrioridadValida(String prioridad) {
-        return "BAJA".equals(prioridad) || "MEDIA".equals(prioridad) || "ALTA".equals(prioridad);
-    }
-
-    private Solicitud crearSolicitud(Estudiante estudiante, String tipo, String prioridad, String descripcion) {
+    private Solicitud crearSolicitud(Estudiante estudiante, TipoSolicitud tipo, Prioridad prioridad, String descripcion) {
         Solicitud solicitud = new Solicitud();
         solicitud.setId(proximoId++);
         solicitud.setEstudiante(estudiante);
         solicitud.setTipo(tipo);
         solicitud.setPrioridad(prioridad);
         solicitud.setDescripcion(descripcion);
-        solicitud.setEstado("PENDIENTE");
+        solicitud.setEstado(EstadoSolicitud.PENDIENTE);
         solicitud.setFechaCreacion(LocalDate.now());
         return solicitud;
     }
@@ -105,22 +102,13 @@ public class SolicitudManager {
             System.out.println("La solicitud ya esta cerrada");
             return false;
         }
-        if (!esTransicionValida(solicitud.getEstado(), nuevoEstado)) {
+        Optional<EstadoSolicitud> estadoDestino = EstadoSolicitud.desde(nuevoEstado);
+        if (estadoDestino.isEmpty() || !solicitud.getEstado().puedePasarA(estadoDestino.get())) {
             System.out.println("Transicion invalida");
             return false;
         }
-        solicitud.setEstado(nuevoEstado);
+        solicitud.setEstado(estadoDestino.get());
         return true;
-    }
-
-    private boolean esTransicionValida(String estadoActual, String nuevoEstado) {
-        if (estadoActual.equals("PENDIENTE")) {
-            return nuevoEstado.equals("EN_PROCESO") || nuevoEstado.equals("RECHAZADA");
-        }
-        if (estadoActual.equals("EN_PROCESO")) {
-            return nuevoEstado.equals("RESUELTA") || nuevoEstado.equals("RECHAZADA");
-        }
-        return false;
     }
 
     public boolean asignarResponsable(int idSolicitud, int idResponsable) {
@@ -139,22 +127,22 @@ public class SolicitudManager {
             return false;
         }
         solicitud.setResponsable(responsable);
-        if (solicitud.getEstado().equals("PENDIENTE")) {
-            solicitud.setEstado("EN_PROCESO");
+        if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+            solicitud.setEstado(EstadoSolicitud.EN_PROCESO);
         }
         return true;
     }
 
     public List<Solicitud> filtrarPorEstado(String estado) {
-        return filtrar(solicitud -> solicitud.getEstado().equals(estado));
+        return filtrar(solicitud -> solicitud.getEstado().name().equals(estado));
     }
 
     public List<Solicitud> filtrarPorTipo(String tipo) {
-        return filtrar(solicitud -> solicitud.getTipo().equals(tipo));
+        return filtrar(solicitud -> solicitud.getTipo().name().equals(tipo));
     }
 
     public List<Solicitud> filtrarPorPrioridad(String prioridad) {
-        return filtrar(solicitud -> solicitud.getPrioridad().equals(prioridad));
+        return filtrar(solicitud -> solicitud.getPrioridad().name().equals(prioridad));
     }
 
     private List<Solicitud> filtrar(Predicate<Solicitud> criterio) {
@@ -177,15 +165,13 @@ public class SolicitudManager {
         reporte.append("=== REPORTE DE SOLICITUDES ===\n");
         reporte.append("Total: ").append(lista.size()).append("\n");
         reporte.append("-- Por estado --\n");
-        agregarConteo(reporte, "PENDIENTE", filtrarPorEstado("PENDIENTE").size());
-        agregarConteo(reporte, "EN_PROCESO", filtrarPorEstado("EN_PROCESO").size());
-        agregarConteo(reporte, "RESUELTA", filtrarPorEstado("RESUELTA").size());
-        agregarConteo(reporte, "RECHAZADA", filtrarPorEstado("RECHAZADA").size());
+        for (EstadoSolicitud estado : EstadoSolicitud.values()) {
+            agregarConteo(reporte, estado.name(), filtrar(solicitud -> solicitud.getEstado() == estado).size());
+        }
         reporte.append("-- Por tipo --\n");
-        agregarConteo(reporte, "CERTIFICADO", filtrarPorTipo("CERTIFICADO").size());
-        agregarConteo(reporte, "EXAMEN", filtrarPorTipo("EXAMEN").size());
-        agregarConteo(reporte, "EQUIVALENCIA", filtrarPorTipo("EQUIVALENCIA").size());
-        agregarConteo(reporte, "RECLAMO", filtrarPorTipo("RECLAMO").size());
+        for (TipoSolicitud tipo : TipoSolicitud.values()) {
+            agregarConteo(reporte, tipo.name(), filtrar(solicitud -> solicitud.getTipo() == tipo).size());
+        }
         agregarConteo(reporte, "Vencidas", contarVencidas(hoy));
         System.out.println(reporte);
         return reporte.toString();

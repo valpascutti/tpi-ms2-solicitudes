@@ -36,7 +36,7 @@ class SolicitudManagerCaracterizacionTest {
 
             Solicitud s = manager.buscarPorId(id);
             assertEquals(1, id);
-            assertEquals("PENDIENTE", s.getEstado());
+            assertEquals(EstadoSolicitud.PENDIENTE, s.getEstado());
             assertEquals("10001", s.getEstudiante().getLegajo());
             assertEquals(LocalDate.now(), s.getFechaCreacion());
         }
@@ -95,7 +95,7 @@ class SolicitudManagerCaracterizacionTest {
             int id = registrarValida("EXAMEN", "ALTA");
 
             assertTrue(manager.cambiarEstado(id, "EN_PROCESO"));
-            assertEquals("EN_PROCESO", manager.buscarPorId(id).getEstado());
+            assertEquals(EstadoSolicitud.EN_PROCESO, manager.buscarPorId(id).getEstado());
         }
 
         @Test
@@ -104,7 +104,7 @@ class SolicitudManagerCaracterizacionTest {
             int id = registrarValida("EXAMEN", "ALTA");
 
             assertFalse(manager.cambiarEstado(id, "RESUELTA"));
-            assertEquals("PENDIENTE", manager.buscarPorId(id).getEstado());
+            assertEquals(EstadoSolicitud.PENDIENTE, manager.buscarPorId(id).getEstado());
         }
 
         @Test
@@ -114,7 +114,7 @@ class SolicitudManagerCaracterizacionTest {
             manager.cambiarEstado(id, "EN_PROCESO");
 
             assertTrue(manager.cambiarEstado(id, "RESUELTA"));
-            assertEquals("RESUELTA", manager.buscarPorId(id).getEstado());
+            assertEquals(EstadoSolicitud.RESUELTA, manager.buscarPorId(id).getEstado());
         }
 
         @Test
@@ -124,7 +124,7 @@ class SolicitudManagerCaracterizacionTest {
             manager.cambiarEstado(id, "RECHAZADA");
 
             assertFalse(manager.cambiarEstado(id, "EN_PROCESO"));
-            assertEquals("RECHAZADA", manager.buscarPorId(id).getEstado());
+            assertEquals(EstadoSolicitud.RECHAZADA, manager.buscarPorId(id).getEstado());
         }
 
         @Test
@@ -146,7 +146,7 @@ class SolicitudManagerCaracterizacionTest {
             assertTrue(manager.asignarResponsable(id, 1));
             Solicitud s = manager.buscarPorId(id);
             assertEquals("Bedelia Central", s.getResponsable().getNombre());
-            assertEquals("EN_PROCESO", s.getEstado());
+            assertEquals(EstadoSolicitud.EN_PROCESO, s.getEstado());
         }
 
         @Test
