@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class SolicitudManager {
 
@@ -124,7 +123,7 @@ public class SolicitudManager {
     private List<Solicitud> filtrar(Predicate<Solicitud> criterio) {
         return repositorioSolicitudes.listarTodas().stream()
                 .filter(criterio)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public boolean estaVencida(Solicitud solicitud, LocalDate hoy) {
