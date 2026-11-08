@@ -1,7 +1,6 @@
 package ar.utn.solicitudes;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -102,7 +101,7 @@ public class SolicitudManager {
             System.out.println("No existe la solicitud " + id);
             return false;
         }
-        if (estaCerrada(solicitud)) {
+        if (solicitud.estaCerrada()) {
             System.out.println("La solicitud ya esta cerrada");
             return false;
         }
@@ -124,10 +123,6 @@ public class SolicitudManager {
         return false;
     }
 
-    private boolean estaCerrada(Solicitud solicitud) {
-        return solicitud.getEstado().equals("RESUELTA") || solicitud.getEstado().equals("RECHAZADA");
-    }
-
     public boolean asignarResponsable(int idSolicitud, int idResponsable) {
         Solicitud solicitud = buscarPorId(idSolicitud);
         if (solicitud == null) {
@@ -139,7 +134,7 @@ public class SolicitudManager {
             System.out.println("No existe el responsable " + idResponsable);
             return false;
         }
-        if (estaCerrada(solicitud)) {
+        if (solicitud.estaCerrada()) {
             System.out.println("No se puede asignar una solicitud cerrada");
             return false;
         }
@@ -172,18 +167,8 @@ public class SolicitudManager {
         return resultado;
     }
 
-    public boolean estaVencida(Solicitud s, LocalDate hoy) {
-        if (s.getEstado().equals("RESUELTA") || s.getEstado().equals("RECHAZADA")) {
-            return false;
-        }
-        long d = ChronoUnit.DAYS.between(s.getFechaCreacion(), hoy);
-        if (s.getPrioridad().equals("ALTA")) {
-            return d > 2;
-        } else if (s.getPrioridad().equals("MEDIA")) {
-            return d > 5;
-        } else {
-            return d > 10;
-        }
+    public boolean estaVencida(Solicitud solicitud, LocalDate hoy) {
+        return solicitud.estaVencida(hoy);
     }
 
     public String generarReporte() {
@@ -211,6 +196,6 @@ public class SolicitudManager {
     }
 
     private int contarVencidas(LocalDate hoy) {
-        return filtrar(solicitud -> estaVencida(solicitud, hoy)).size();
+        return filtrar(solicitud -> solicitud.estaVencida(hoy)).size();
     }
 }

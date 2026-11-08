@@ -1,8 +1,13 @@
 package ar.utn.solicitudes;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Solicitud {
+
+    private static final int DIAS_PLAZO_ALTA = 2;
+    private static final int DIAS_PLAZO_MEDIA = 5;
+    private static final int DIAS_PLAZO_BAJA = 10;
 
     private int id;
     private Estudiante estudiante;
@@ -75,5 +80,27 @@ public class Solicitud {
 
     public void setFechaCreacion(LocalDate fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public boolean estaVencida(LocalDate hoy) {
+        if (estaCerrada()) {
+            return false;
+        }
+        long diasTranscurridos = ChronoUnit.DAYS.between(fechaCreacion, hoy);
+        return diasTranscurridos > diasDePlazo();
+    }
+
+    public boolean estaCerrada() {
+        return estado.equals("RESUELTA") || estado.equals("RECHAZADA");
+    }
+
+    private int diasDePlazo() {
+        if (prioridad.equals("ALTA")) {
+            return DIAS_PLAZO_ALTA;
+        }
+        if (prioridad.equals("MEDIA")) {
+            return DIAS_PLAZO_MEDIA;
+        }
+        return DIAS_PLAZO_BAJA;
     }
 }
