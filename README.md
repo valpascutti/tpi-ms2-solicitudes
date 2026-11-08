@@ -4,6 +4,11 @@ Trabajo Practico Integrador de Metodologia de Sistemas II (Tecnicatura Universit
 
 El objetivo no es agregar funcionalidad, sino mejorar la calidad interna de un sistema existente: diagnosticar code smells y deuda tecnica, aplicar SOLID y Clean Code, refactorizar sin cambiar el comportamiento externo y hacer un code review.
 
+## Integrantes
+
+- Valentina Pascutti
+- Angela Irina Ramos
+
 ## Descripcion
 
 Modulo de consola que gestiona las solicitudes que los estudiantes presentan en una facultad (certificados, mesas de examen, equivalencias y reclamos). No tiene interfaz grafica ni base de datos: los datos se guardan en memoria.
@@ -54,15 +59,11 @@ docs/                               diagnostico, refactoring, code review y capt
 
 - [docs/diagnostico.md](docs/diagnostico.md): etapas 1, 2 y 3 (sistema base, calidad externa e interna, code smells).
 - [docs/refactoring.md](docs/refactoring.md): etapas 4, 5 y 6 (SOLID y Clean Code, refactorings, pruebas).
-- docs/code-review.md: etapa 7 (checklist y revision).
+- [docs/code-review.md](docs/code-review.md): etapa 7 (checklist y revision).
+- Etapa 8 (conclusiones grupales e individuales): en el informe PDF.
 
 ## Tags
 
 - `estado-inicial`: version base con los problemas a diagnosticar.
 - `etapa-diagnostico`, `etapa-refactoring`, `etapa-pruebas`, `etapa-docs`: hitos de cada etapa.
 - `estado-refactorizado`: version final.
-
-## Integrantes
-
-- Valentina Pascutti
-- Angela Irina Ramos

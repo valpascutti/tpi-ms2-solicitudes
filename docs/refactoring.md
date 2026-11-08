@@ -4,14 +4,28 @@ Rama: `refactor`. Se hizo un commit por cada refactoring y despues de cada uno s
 
 ## Etapa 4 - Aplicacion de SOLID y Clean Code
 
-| Principio | Problema en la version inicial | Mejora aplicada | Refactoring |
-|---|---|---|---|
-| SRP | SolicitudManager hacia todo (Smell 1) | Se separaron ValidadorSolicitud, GeneradorReporte y los repositorios. El Manager solo coordina | 5 y 6 |
-| OCP | if/else por tipo, prioridad y estado (Smell 7) | Enums. El reporte recorre los valores del enum, para agregar un tipo nuevo alcanza con sumarlo al enum | 4 |
-| LSP | No habia herencia | Cualquier implementacion de RepositorioSolicitudes (memoria, archivo, base de datos) puede reemplazar a otra sin cambiar el Manager | 5 |
-| ISP | No habia interfaces | Dos interfaces chicas (RepositorioSolicitudes y RepositorioResponsables) en lugar de una general | 5 |
-| DIP | Listas public static usadas directamente | El Manager depende de interfaces y las recibe por constructor | 5 |
-| Clean Code | Nombres poco claros (p, ep, aux, cont, d), metodos largos, numeros sueltos, codigos de error y catch vacio (Smells 4 y 6) | Nombres descriptivos, metodos cortos, constantes y excepcion propia | 1, 2, 4 y 6 |
+**SRP (Responsabilidad unica)** - Refactorings 5 y 6
+- Problema: SolicitudManager hacia todo (Smell 1).
+- Mejora: se separaron ValidadorSolicitud, GeneradorReporte y los repositorios. El Manager solo coordina.
+
+**OCP (Abierto/cerrado)** - Refactoring 4
+- Problema: if/else por tipo, prioridad y estado (Smell 7).
+- Mejora: enums. Para agregar un tipo nuevo alcanza con sumarlo al enum; la validacion y el reporte lo toman solos.
+
+**LSP (Sustitucion de Liskov)** - Refactoring 5
+- Problema: no habia herencia ni interfaces.
+- Mejora: cualquier implementacion de RepositorioSolicitudes (memoria, archivo, base de datos) puede reemplazar a otra sin cambiar el Manager.
+
+**ISP (Segregacion de interfaces)** - Refactoring 5
+- Mejora: dos interfaces chicas (RepositorioSolicitudes y RepositorioResponsables) en lugar de una general.
+
+**DIP (Inversion de dependencias)** - Refactoring 5
+- Problema: listas public static usadas directamente.
+- Mejora: el Manager depende de interfaces y las recibe por constructor.
+
+**Clean Code** - Refactorings 1, 2, 4 y 6
+- Problema: nombres poco claros (p, ep, aux, cont, d), metodos largos, numeros sueltos, codigos de error y catch vacio (Smells 4 y 6).
+- Mejora: nombres descriptivos, metodos cortos, constantes y excepcion propia.
 
 ## Etapa 5 - Refactorings aplicados
 
@@ -156,11 +170,11 @@ try {
 
 Se usaron los 23 tests de caracterizacion (CP01 a CP23) que se escribieron sobre la version inicial. Se corrieron antes de empezar y despues de cada refactoring.
 
-| Momento | Resultado | Evidencia |
-|---|---|---|
-| Version inicial (tag estado-inicial) | 23/23 en verde | tests-antes.png |
-| Despues de cada refactoring (1 a 6) | 23/23 en verde | historial de commits |
-| Version final | 23/23 en verde | tests-despues.png |
+| Momento                              | Resultado      | Evidencia            |
+|--------------------------------------|----------------|----------------------|
+| Version inicial (tag estado-inicial) | 23/23 en verde | tests-antes.png      |
+| Despues de cada refactoring (1 a 6)  | 23/23 en verde | historial de commits |
+| Version final                        | 23/23 en verde | tests-despues.png    |
 
 Ademas se comparo la salida del Main antes y despues: es identica (mismos mensajes y mismo reporte).
 
@@ -173,4 +187,3 @@ Los valores esperados no se modificaron. Solo cambio la forma de llamar al codig
 ## Pendientes
 - SonarQube sugiere reemplazar System.out por un logger. No se cambio porque el sistema es de consola y la salida es parte del comportamiento esperado.
 - SonarQube sugiere pasar un Clock a LocalDate.now() para no depender de la fecha de la maquina.
-- El pom.xml usa Java 17 y la documentacion dice Java 21. Conviene unificarlo.
