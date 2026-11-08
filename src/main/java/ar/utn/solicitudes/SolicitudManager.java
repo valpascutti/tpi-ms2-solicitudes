@@ -8,11 +8,10 @@ import java.util.stream.Collectors;
 
 public class SolicitudManager {
 
-    private static final int LARGO_MINIMO_DESCRIPCION = 10;
-
     private final RepositorioSolicitudes repositorioSolicitudes;
     private final RepositorioResponsables repositorioResponsables;
     private final GeneradorReporte generadorReporte;
+    private final ValidadorSolicitud validador = new ValidadorSolicitud();
     private int proximoId = 1;
 
     public SolicitudManager() {
@@ -28,47 +27,19 @@ public class SolicitudManager {
     }
 
     public int registrarSolicitud(Estudiante estudiante, String tipo, String prioridad, String descripcion) {
-        Optional<TipoSolicitud> tipoSolicitud = TipoSolicitud.desde(tipo);
-        Optional<Prioridad> prioridadSolicitud = Prioridad.desde(prioridad);
-        String error = validarDatos(estudiante, tipoSolicitud, prioridadSolicitud, descripcion);
-        if (error != null) {
-            System.out.println("Error: " + error);
+        try {
+            validador.validarEstudiante(estudiante);
+            TipoSolicitud tipoSolicitud = validador.validarTipo(tipo);
+            Prioridad prioridadSolicitud = validador.validarPrioridad(prioridad);
+            validador.validarDescripcion(descripcion);
+            Solicitud solicitud = crearSolicitud(estudiante, tipoSolicitud, prioridadSolicitud, descripcion);
+            repositorioSolicitudes.guardar(solicitud);
+            System.out.println("Solicitud registrada con id " + solicitud.getId());
+            return solicitud.getId();
+        } catch (SolicitudInvalidaException error) {
+            System.out.println("Error: " + error.getMessage());
             return -1;
         }
-        Solicitud solicitud = crearSolicitud(estudiante, tipoSolicitud.get(), prioridadSolicitud.get(), descripcion);
-        repositorioSolicitudes.guardar(solicitud);
-        System.out.println("Solicitud registrada con id " + solicitud.getId());
-        return solicitud.getId();
-    }
-
-    private String validarDatos(Estudiante estudiante, Optional<TipoSolicitud> tipo, Optional<Prioridad> prioridad, String descripcion) {
-        if (estudiante == null || estaVacio(estudiante.getLegajo())) {
-            return "legajo vacio";
-        }
-        if (estaVacio(estudiante.getNombre())) {
-            return "nombre vacio";
-        }
-        if (!esEmailValido(estudiante.getEmail())) {
-            return "email invalido";
-        }
-        if (tipo.isEmpty()) {
-            return "tipo invalido";
-        }
-        if (prioridad.isEmpty()) {
-            return "prioridad invalida";
-        }
-        if (descripcion == null || descripcion.length() < LARGO_MINIMO_DESCRIPCION) {
-            return "descripcion muy corta";
-        }
-        return null;
-    }
-
-    private boolean estaVacio(String texto) {
-        return texto == null || texto.isEmpty();
-    }
-
-    private boolean esEmailValido(String email) {
-        return email != null && email.contains("@") && email.contains(".");
     }
 
     private Solicitud crearSolicitud(Estudiante estudiante, TipoSolicitud tipo, Prioridad prioridad, String descripcion) {
