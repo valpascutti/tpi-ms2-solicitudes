@@ -15,8 +15,6 @@ class SolicitudManagerCaracterizacionTest {
 
     @BeforeEach
     void setUp() {
-        SolicitudManager.lista.clear();
-        SolicitudManager.responsables.clear();
         manager = new SolicitudManager();
         manager.agregarResponsable(1, "Bedelia Central", "BEDELIA");
     }
@@ -55,7 +53,7 @@ class SolicitudManagerCaracterizacionTest {
             int id = manager.registrarSolicitud(new Estudiante("10001", "Estudiante Uno", "mail-invalido"), "EXAMEN", "ALTA", "Descripcion de prueba valida");
 
             assertEquals(-1, id);
-            assertTrue(SolicitudManager.lista.isEmpty());
+            assertTrue(manager.listarSolicitudes().isEmpty());
         }
 
         @Test
