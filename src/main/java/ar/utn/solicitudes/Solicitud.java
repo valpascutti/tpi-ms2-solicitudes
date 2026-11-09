@@ -1,14 +1,16 @@
 package ar.utn.solicitudes;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Solicitud {
 
+
     private int id;
     private Estudiante estudiante;
-    private String tipo;
-    private String prioridad;
-    private String estado;
+    private TipoSolicitud tipo;
+    private Prioridad prioridad;
+    private EstadoSolicitud estado;
     private String descripcion;
     private Responsable responsable;
     private LocalDate fechaCreacion;
@@ -29,27 +31,27 @@ public class Solicitud {
         this.estudiante = estudiante;
     }
 
-    public String getTipo() {
+    public TipoSolicitud getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoSolicitud tipo) {
         this.tipo = tipo;
     }
 
-    public String getPrioridad() {
+    public Prioridad getPrioridad() {
         return prioridad;
     }
 
-    public void setPrioridad(String prioridad) {
+    public void setPrioridad(Prioridad prioridad) {
         this.prioridad = prioridad;
     }
 
-    public String getEstado() {
+    public EstadoSolicitud getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(EstadoSolicitud estado) {
         this.estado = estado;
     }
 
@@ -75,5 +77,17 @@ public class Solicitud {
 
     public void setFechaCreacion(LocalDate fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public boolean estaVencida(LocalDate hoy) {
+        if (estaCerrada()) {
+            return false;
+        }
+        long diasTranscurridos = ChronoUnit.DAYS.between(fechaCreacion, hoy);
+        return diasTranscurridos > prioridad.getDiasDePlazo();
+    }
+
+    public boolean estaCerrada() {
+        return estado.estaCerrado();
     }
 }

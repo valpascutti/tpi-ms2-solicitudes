@@ -6,14 +6,14 @@
 Gestion de solicitudes academicas de una facultad (mesas de examen, equivalencias, certificados y reclamos)
 
 ### Alcance: 
-modulo de backen en consola. Registra solicitudes, controla su ciclo de vida, las asigna a un responsable, permite consultarlas y
+modulo de backend en consola. Registra solicitudes, controla su ciclo de vida, las asigna a un responsable, permite consultarlas y
 genera un reporte. No tiene interfaz grafica ni base de datos.
 
 ### Actores:
 
 Estudiante: crea la solicitud (legajo, nombre, email, tipo, prioridad, descripcion)
 Personal administrativo: Registra la solicitud, la asigna y cambia su estado
-Responsable / area: queda asignado a la solicitud y la resuelve o rechaa
+Responsable / area: queda asignado a la solicitud y la resuelve o rechaza
 Coordinacion: Consulta filtros y el reporte general
 
 ### Funcionalidades:
@@ -69,7 +69,7 @@ Ese costo extra que se paga en cada cambio es la deuda tecnica del sistema. El o
 
 ## Etapa 3 - Deuda tecnica y code smells
 
-Archivo analizado: SolicitudManager.java (215 lineas)
+Archivo analizado: SolicitudManager.java (215 lineas). Los numeros de linea corresponden a la version inicial (tag estado-inicial).
 
 ### Smell 1 - Clase gigante (God Class)
 - Ubicacion: SolicitudManager, toda la clase.
